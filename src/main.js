@@ -6,6 +6,7 @@ import { GuardManager } from './guards.js';
 import { Player } from './player.js';
 import { HUD } from './hud.js';
 import { AudioFX } from './audio.js';
+import { createPostFX } from './postfx.js';
 
 // ---------- renderer / scene ----------
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -15,7 +16,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.15;
+renderer.toneMappingExposure = 1.4;
 renderer.domElement.classList.add('game');
 document.body.prepend(renderer.domElement);
 
@@ -23,10 +24,13 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.05, 700);
 scene.add(camera);
 
+const postfx = createPostFX(renderer, scene, camera);
+
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  postfx.setSize(window.innerWidth, window.innerHeight);
 });
 
 // ---------- game objects ----------
@@ -195,7 +199,7 @@ function loop(now) {
     world.updateSearchlights(dt, time, camera.position, false);
   }
 
-  renderer.render(scene, camera);
+  postfx.render(time);
 }
 
 requestAnimationFrame(loop);

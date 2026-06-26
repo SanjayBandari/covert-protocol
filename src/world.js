@@ -2,35 +2,37 @@
 // colliders for movement, and occluder meshes for line-of-sight checks.
 
 import * as THREE from 'three';
-
-function groundTexture() {
-  const c = document.createElement('canvas');
-  c.width = c.height = 256;
-  const g = c.getContext('2d');
-  g.fillStyle = '#222b1e';
-  g.fillRect(0, 0, 256, 256);
-  for (let i = 0; i < 2600; i++) {
-    const v = Math.random();
-    g.fillStyle = v > 0.66 ? '#2a3424' : v > 0.33 ? '#1c2418' : '#28301f';
-    g.fillRect(Math.random() * 256, Math.random() * 256, 2, 2);
-  }
-  const tex = new THREE.CanvasTexture(c);
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(60, 60);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
-}
+import { makeConcrete, makeGround, makeMetal } from './textures.js';
 
 export function buildWorld(scene) {
   const colliders = [];   // {minX,maxX,minZ,maxZ,type} — XZ AABBs for movement
   const losMeshes = [];   // meshes that block vision
 
-  const matWall = new THREE.MeshStandardMaterial({ color: 0x4a4f55, roughness: 0.95 });
-  const matConcrete = new THREE.MeshStandardMaterial({ color: 0x575b60, roughness: 0.9 });
-  const matMetal = new THREE.MeshStandardMaterial({ color: 0x3a4148, roughness: 0.6, metalness: 0.55 });
-  const matCrate = new THREE.MeshStandardMaterial({ color: 0x6e5b3f, roughness: 0.9 });
-  const matRock = new THREE.MeshStandardMaterial({ color: 0x474c50, roughness: 1.0 });
-  const matDark = new THREE.MeshStandardMaterial({ color: 0x2b3036, roughness: 0.85 });
+  const concreteMaps = makeConcrete([2, 1]);
+  const metalMaps = makeMetal([1, 2]);
+
+  const matWall = new THREE.MeshStandardMaterial({
+    color: 0x6a6f76, roughness: 0.96,
+    map: concreteMaps.map, normalMap: concreteMaps.normalMap,
+    normalScale: new THREE.Vector2(0.7, 0.7),
+  });
+  const matConcrete = new THREE.MeshStandardMaterial({
+    color: 0x767b81, roughness: 0.92,
+    map: concreteMaps.map, normalMap: concreteMaps.normalMap,
+    normalScale: new THREE.Vector2(0.8, 0.8),
+  });
+  const matMetal = new THREE.MeshStandardMaterial({
+    color: 0x9aa1a8, roughness: 0.55, metalness: 0.8,
+    map: metalMaps.map, normalMap: metalMaps.normalMap, roughnessMap: metalMaps.roughnessMap,
+    normalScale: new THREE.Vector2(0.5, 0.5),
+  });
+  const matCrate = new THREE.MeshStandardMaterial({
+    color: 0x8a7350, roughness: 0.9,
+    map: concreteMaps.map, normalMap: concreteMaps.normalMap,
+    normalScale: new THREE.Vector2(0.6, 0.6),
+  });
+  const matRock = new THREE.MeshStandardMaterial({ color: 0x575c60, roughness: 1.0 });
+  const matDark = new THREE.MeshStandardMaterial({ color: 0x33383e, roughness: 0.85 });
 
   function addBox(w, h, d, x, z, mat, { y = null, collide = true, los = true, type = 'building', rotY = 0 } = {}) {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
@@ -48,8 +50,8 @@ export function buildWorld(scene) {
   }
 
   // ---------- sky / atmosphere ----------
-  scene.background = new THREE.Color(0x05070d);
-  scene.fog = new THREE.FogExp2(0x070b14, 0.0085);
+  scene.background = new THREE.Color(0x0b1320);
+  scene.fog = new THREE.FogExp2(0x0d1726, 0.0055);
 
   // stars
   {
@@ -81,10 +83,10 @@ export function buildWorld(scene) {
   }
 
   // ---------- lighting ----------
-  const hemi = new THREE.HemisphereLight(0x33415e, 0x0c100a, 0.55);
+  const hemi = new THREE.HemisphereLight(0x4a5d82, 0x1a201a, 0.95);
   scene.add(hemi);
 
-  const moonLight = new THREE.DirectionalLight(0x9db4e0, 1.5);
+  const moonLight = new THREE.DirectionalLight(0xb3c6ec, 2.3);
   moonLight.position.set(-70, 95, -60);
   moonLight.castShadow = true;
   moonLight.shadow.mapSize.set(2048, 2048);
@@ -97,9 +99,13 @@ export function buildWorld(scene) {
   scene.add(moonLight);
 
   // ---------- ground ----------
+  const groundMaps = makeGround([70, 70]);
   const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(500, 500),
-    new THREE.MeshStandardMaterial({ map: groundTexture(), roughness: 1.0 })
+    new THREE.PlaneGeometry(500, 500, 1, 1),
+    new THREE.MeshStandardMaterial({
+      map: groundMaps.map, normalMap: groundMaps.normalMap,
+      normalScale: new THREE.Vector2(1.1, 1.1), roughness: 1.0, color: 0xaab0a0,
+    })
   );
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
