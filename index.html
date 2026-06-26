@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COVERT PROTOCOL — Operation Silent Dawn</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+  </script>
+</head>
+<body>
+
+  <!-- ===== HUD ===== -->
+  <div id="hud" class="hidden">
+    <div id="crosshair"><span></span><span></span><span></span><span></span></div>
+
+    <div id="objective-panel">
+      <div class="panel-label">OBJECTIVE</div>
+      <div id="objective-text">INFILTRATE THE BASE</div>
+      <div id="objective-dist"></div>
+    </div>
+
+    <div id="detect-wrap">
+      <div class="panel-label">DETECTION</div>
+      <div id="detect-track"><div id="detect-bar"></div></div>
+    </div>
+    <div id="alarm-banner" class="hidden">⚠ ALARM RAISED ⚠</div>
+
+    <canvas id="minimap" width="200" height="200"></canvas>
+
+    <div id="health-panel">
+      <div class="panel-label">VITALS</div>
+      <div id="health-track"><div id="health-bar"></div></div>
+    </div>
+
+    <div id="weapon-panel">
+      <div id="weapon-name">SD PISTOL</div>
+      <div id="ammo">12 <span>/ 60</span></div>
+      <div id="reload-hint" class="hidden">RELOADING…</div>
+    </div>
+
+    <div id="interact-prompt" class="hidden">HOLD <b>E</b> TO PLANT THE CHARGE</div>
+    <div id="hitmarker" class="hidden">✕</div>
+    <div id="damage-vignette"></div>
+    <div id="stance-indicator">STANDING</div>
+  </div>
+
+  <!-- ===== MENU ===== -->
+  <div id="menu">
+    <div class="menu-box">
+      <h1>COVERT<span> PROTOCOL</span></h1>
+      <h2>OPERATION SILENT DAWN</h2>
+      <div class="briefing">
+        <p><b>SITREB //</b> A rogue paramilitary cell operates a comms uplink from a
+        fortified depot in the northern highlands. Their network coordinates arms
+        shipments across the border.</p>
+        <p><b>TASKING //</b> Infiltrate the depot under cover of darkness. Plant a
+        demolition charge on the comms tower. Exfiltrate to the extraction beacon.</p>
+        <p><b>ROE //</b> You are deniable. Suppressed fire is quiet — rifle fire is not.
+        Stay low, stay dark, avoid the searchlights.</p>
+      </div>
+      <div class="controls-grid">
+        <span>W A S D</span><span>Move</span>
+        <span>MOUSE</span><span>Look / Fire</span>
+        <span>SHIFT</span><span>Sprint (loud)</span>
+        <span>C</span><span>Crouch (stealth)</span>
+        <span>SPACE</span><span>Jump</span>
+        <span>R</span><span>Reload</span>
+        <span>1 / 2 / Q</span><span>Weapons</span>
+        <span>E</span><span>Interact</span>
+      </div>
+      <button id="btn-deploy">▸ DEPLOY</button>
+      <div class="menu-foot">an original open-source tactical stealth prototype</div>
+    </div>
+  </div>
+
+  <!-- ===== PAUSED ===== -->
+  <div id="paused" class="hidden">
+    <div class="menu-box small">
+      <h2>PAUSED</h2>
+      <p>Click to resume the operation.</p>
+      <button id="btn-resume">▸ RESUME</button>
+    </div>
+  </div>
+
+  <!-- ===== DEATH ===== -->
+  <div id="dead" class="hidden">
+    <div class="menu-box small failed">
+      <h2>MISSION FAILED</h2>
+      <p id="dead-text">Operative down. The uplink remains active.</p>
+      <button id="btn-retry">▸ RETRY MISSION</button>
+    </div>
+  </div>
+
+  <!-- ===== WIN ===== -->
+  <div id="win" class="hidden">
+    <div class="menu-box small success">
+      <h2>MISSION COMPLETE</h2>
+      <p>Charge armed. Uplink destroyed. Extraction confirmed.</p>
+      <div id="win-stats"></div>
+      <button id="btn-replay">▸ REPLAY MISSION</button>
+    </div>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
